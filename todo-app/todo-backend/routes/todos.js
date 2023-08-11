@@ -1,5 +1,6 @@
 const express = require("express");
 const { Todo } = require("../mongo");
+const { getAsync, setAsync } = require("../redis");
 const router = express.Router();
 
 /* GET todos listing. */
@@ -10,10 +11,18 @@ router.get("/", async (_, res) => {
 
 /* POST todo to listing. */
 router.post("/", async (req, res) => {
+  // Save new todo to MongoDB
   const todo = await Todo.create({
     text: req.body.text,
     done: false,
   });
+
+  // Increase todo count in Redis
+  const count = await getAsync("todoCount");
+  const newCount = count ? Number(count) + 1 : 1;
+  await setAsync("todoCount", newCount);
+
+  // Return response
   res.send(todo);
 });
 
