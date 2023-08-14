@@ -6,7 +6,7 @@ COPY . .
 
 RUN npm ci
 
-ENV PORT=3001
+ENV PORT=3000
 
 USER node
 
