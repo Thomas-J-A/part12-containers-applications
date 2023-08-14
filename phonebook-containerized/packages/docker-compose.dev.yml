@@ -1,0 +1,44 @@
+services:
+  client:
+    image: phonebook-client-dev
+    build:
+      context: ./client
+      dockerfile: dev.Dockerfile
+    ports:
+      - 5173:5173
+    volumes:
+      - ./client:/usr/src/app
+    environment:
+      - VITE_BACKEND_ORIGIN=http://localhost:3000
+    container_name: phonebook-client-dev
+    depends_on:
+      - server
+
+  server:
+    image: phonebook-server-dev
+    build:
+      context: ./server
+      dockerfile: dev.Dockerfile
+    ports:
+      - 3000:3000
+    volumes:
+      - ./server:/usr/src/app
+    environment:
+      - MONGODB_URI=mongodb://authed_user:secret_password@mongo:27017/persons
+      - PORT=3000
+    container_name: phonebook-server-dev
+    depends_on:
+      - mongo
+
+  mongo:
+    image: mongo
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=secret
+      - MONGO_INITDB_DATABASE=persons
+    volumes:
+      - ./server/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
+      - phonebook-containerized-dev-mongo-data:/data/db
+
+volumes:
+  phonebook-containerized-dev-mongo-data:
