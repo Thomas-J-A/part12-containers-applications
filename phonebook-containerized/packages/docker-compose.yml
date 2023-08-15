@@ -1,0 +1,19 @@
+services:
+  client:
+    image: phonebook-client
+    build:
+      context: ./client
+    ports:
+      - 8080:80
+    container_name: phonebook-client
+
+  server:
+    image: phonebook-server
+    build:
+      context: ./server
+    ports:
+      - 3000:3000
+    environment:
+      - MONGODB_URI=mongodb+srv://tomaspbury1:usFbckvZ0shwqvO0@cluster0.qfn6ijn.mongodb.net/persons?retryWrites=true&w=majority
+      - PORT=3000
+    container_name: phonebook-server
